@@ -9,7 +9,7 @@ def client():
         shell=True,
         stdout=subprocess.PIPE
     )
-    with open("/tmp/passage.txt", "a") as f:
+    with open("/tmp/passage2.txt", "a") as f:
         f.write("Un passage ici\n")
     if result.returncode == 0:
         data = result.stdout.decode("utf-8")
