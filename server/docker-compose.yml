@@ -4,11 +4,11 @@ services:
         image: grafana/grafana
         ports:
             - "3000:3000"
-        container_name: argos-server-grafana
+        container_name: battery-probe-grafana
     influxdb:
         image: influxdb
         ports:
             - "8086:8086" 
-        container_name: argos-server-influxdb
+        container_name: battery-probe-influxdb
         environment:
             - INFLUXDB_DB="monitoring"
