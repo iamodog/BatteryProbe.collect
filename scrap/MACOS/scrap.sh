@@ -5,28 +5,34 @@ printf "epoch,"
 printf "$(date +%s )"
 printf "\n"
 
-#Voltage now
+#Voltage now, in mV
 printf "voltage_now,"
 printf "$(system_profiler SPPowerDataType | grep Voltage| cut -f2 -d: | sed 's/ //g')"
 printf "\n"
 
-#Current now
+#Current now in mA
 printf "current_now,"
 echo "$(system_profiler SPPowerDataType | grep Amperage | cut -f2 -d: | sed 's/ //g')"
 
-#Charge full design
+#Charge full design in mAh
 printf "charge_full_design,"
 echo $(istats battery capacity --value-only | sed '3q;d')
 
-#Charge full now
+#Charge full now in mAh
 printf "charge_full,"
 printf "$(system_profiler SPPowerDataType | grep "Full Charge Capacity" | cut -f2 -d: | sed 's/ //g' )"
 printf "\n"
 
-#Charge now
+#Charge now in mAh
 printf "charge_now,"
 printf "$(system_profiler SPPowerDataType | grep "Charge Remaining" | cut -f2 -d: | sed 's/ //g' )"
 printf "\n"
+
+#Capacity
+# printf "capacity,"
+# calc = `2/2`
+# echo $(calc)
+# printf "\n"
 
 #Supply manufacturer
 printf "manufacturer,"
@@ -68,19 +74,21 @@ mean_rpm=$((sum_rpm/$n_fans))
 echo "$mean_rpm"
 
 #Battery temp (°C)
-printf "battery_temp"
+printf "battery_temp,"
 echo $(istats battery temp --value-only)
 
 #Cycle count
 printf "cycle_count"
 echo $(istats battery cc --value-only | head -n 1)
 
+#Statut de la batterie: en charge ou chargé?
+
 #Ram load
-printf "Ram load,A faire"
+printf "Ram load,A discuter"
 printf "\n"
 
-#Swap load
-printf "Swap size,A faire"
+#Swap load, 
+printf "Swap size,A discuter"
 printf "\n"
 
 
