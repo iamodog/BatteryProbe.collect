@@ -1,14 +1,23 @@
 version: '3'
+
 services:
     grafana:
         image: grafana/grafana
         ports:
             - "3000:3000"
+        volumes:
+            - bp-data-grafana:/var/lib/grafana
         container_name: battery-probe-grafana
     influxdb:
         image: influxdb
         ports:
             - "8086:8086" 
+        volumes:
+            - bp-data-influxdb:/var/lib/influxdb
         container_name: battery-probe-influxdb
         environment:
             - INFLUXDB_DB="monitoring"
+
+volumes:
+    bp-data-grafana:
+    bp-data-influxdb:
