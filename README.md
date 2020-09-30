@@ -1,9 +1,16 @@
-# BatteryProbe.ai-fetch
-Fetch batteries data .. to complete 
+# BatteryProbe.collect
 
+## Server
 
+### Usage
+To build and run the influxdb and grafana containers, use:
+```
+$ docker-compose -f server/docker-compose.yml up --build -d
+```
 
-## Daemon
+## Client
+
+### Daemon
 
 To start the daemon, simply launch the program init.py
 
