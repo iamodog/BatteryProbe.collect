@@ -87,6 +87,7 @@ def format_payload(data):
         sys.exit(1)
     for key in tags:
         del data["@"+key]
+    tags["os"] = "linux" if args.linux else "macos"
  
     payload = ""
     for measurement, value_m in data.items():
