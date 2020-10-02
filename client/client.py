@@ -1,16 +1,26 @@
-""""""
+"""Main client script.
+
+Collect the data from a bash script, and send it to a remote database along 
+with some additional elements.
+"""
 
 
+import os
 import sys
 import logging
 import argparse
-import subprocess
+from uuid import uuid4
 from time import sleep 
+from pathlib import Path
+from os.path import isfile, isdir, join
 
 import requests
+import subprocess
 
 
-logging.basicConfig(level=logging.INFO)
+CACHE_DIR = join(str(Path.home()), ".battery_probe")
+CACHE_FILE = "uuid"
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--interval",
@@ -30,15 +40,15 @@ parser.add_argument(
     "--mac_os",
     action="store_true"
 )
+parser.add_argument(
+    "--debug",
+    action="store_true"
+)
 
 
 def client():
-    if args.mac_os:
-        command = "scrap/macOS/scrap.sh"
-    elif args.linux:
-        command = "scrap/Linux/scrap.sh"
-    else:
-        raise AssertionError("OS not specified") 
+    """Run scraping script and send output to remote database"""
+    # Run OS-specific scraping script
     result = subprocess.run(
         command,
         shell=True,
@@ -51,7 +61,7 @@ def client():
     else:
         logging.error("Bash script failed to scrap data")
         sys.exit(1) 
-    logging.info(payload)  # TODO: remove this
+    logging.debug(payload)
 
     # Send payload
     response = requests.post(
@@ -71,23 +81,63 @@ def client():
         sys.exit(1)
 
 
+def get_uuid():
+    """Return an universally unique ID to identify the host machine"""
+    # If uuid already exists
+    if isfile(join(CACHE_DIR, CACHE_FILE)):
+        with open(join(CACHE_DIR, CACHE_FILE), "r") as file:
+            return file.read()
+    # If not, create one
+    else:
+        if not isdir(CACHE_DIR):
+            os.mkdir(CACHE_DIR)
+        with open(join(CACHE_DIR, CACHE_FILE), "a") as file:
+            uuid = str(uuid4()).replace("-", "")
+            file.write(uuid)
+            return uuid
+
+
 def format_payload(data):
-    # [measurement],[tag=,tag=] value=[value] [epoch]
+    """Format the bash script output into an URL-encoded payload.
+
+    InfluxDB API docs: 
+        https://docs.influxdata.com/influxdb/v1.8/guides/write_data/
+
+    Args:
+        data (str): Measurements and their values (comma separated). 
+            A tag is identified by a '@'. Tags are applied globally to 
+            every measurement.
     
+    Returns: 
+        Payload (str) with the following format:
+        [measurement],[tag=,tag=,...] [field]=[value] [epoch]
+    """
+    # Parse str to dict 
     data = {
         el.split(",")[0]: el.split(",")[1] 
         for el in data.split("\n") 
         if len(el) != 0 and el.split(",")[1] != "" 
     }
+
+    # Extract epoch
     epoch = data["epoch"]
     del data["epoch"]
-    tags = {key[1:]: value for key, value in data.items() if key.startswith("@")}
+
+    # Extract tags
+    tags = {
+        key[1:]: value 
+        for key, value in data.items() if key.startswith("@")
+    }
     if len(tags) == 0:
         logging.error("No tags found")
         sys.exit(1)
     for key in tags:
         del data["@"+key]
- 
+    # Additional tags
+    tags["os"] = "linux" if args.linux else "macos"
+    tags["uuid"] = uuid
+
+    # Format the payload 
     payload = ""
     for measurement, value_m in data.items():
         payload += f"{measurement}"
@@ -98,6 +148,14 @@ def format_payload(data):
 
 
 def main():
+    global uuid, command
+    uuid = get_uuid()
+    if args.mac_os:
+        command = "scrap/macOS/scrap.sh"
+    elif args.linux:
+        command = "scrap/Linux/scrap.sh"
+    else:
+        raise AssertionError("OS not specified") 
     while True:
         client()
         sleep(int(args.interval))
@@ -105,4 +163,8 @@ def main():
 
 if __name__ == "__main__":
     args = parser.parse_args()
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
     main()

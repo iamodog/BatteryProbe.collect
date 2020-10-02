@@ -14,5 +14,4 @@ $ docker-compose -f server/docker-compose.yml up --build -d
 
 To start the daemon, simply launch the program init.py
 
-(Coming)
-Replace with daemon management: ./init.py start/stop/restart
+
