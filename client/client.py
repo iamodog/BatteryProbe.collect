@@ -16,6 +16,7 @@ from os.path import isfile, isdir, join
 
 import requests
 import subprocess
+import daemon 
 
 
 CACHE_DIR = join(str(Path.home()), ".battery_probe")
@@ -167,4 +168,5 @@ if __name__ == "__main__":
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
-    main()
+    with daemon.DaemonContext():
+        main()
