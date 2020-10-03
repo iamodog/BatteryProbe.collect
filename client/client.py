@@ -20,6 +20,7 @@ import subprocess
 
 CACHE_DIR = join(str(Path.home()), ".battery_probe")
 CACHE_FILE = "uuid"
+SEPARATOR = ":"
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -64,20 +65,24 @@ def client():
     logging.debug(payload)
 
     # Send payload
-    response = requests.post(
-        f"http://{args.database_uri}/write?db=monitoring&precision=s",
-        headers={"Content-type": "text/xml"}, 
-        data=payload,
-    )
-    if 400 <= response.status_code < 500:
-        logging.error(f"InfluxDB could not understand the request. \
-            Reponse: {response.json()}"
+    try:
+        response = requests.post(
+            f"http://{args.database_uri}/write?db=monitoring&precision=s",
+            headers={"Content-type": "text/xml"}, 
+            data=payload,
         )
-        sys.exit(1)
-    elif 500 <= response.status_code:
-        logging.error(f"The system is overloaded or significantly impaired. \
-            Reponse: {response.json()}"
-        )
+        if 400 <= response.status_code < 500:
+            logging.error(f"InfluxDB could not understand the request. \
+                Reponse: {response.json()}"
+            )
+            sys.exit(1)
+        elif 500 <= response.status_code:
+            logging.error(f"The system is overloaded or significantly impaired. \
+                Reponse: {response.json()}"
+            )
+            sys.exit(1)
+    except requests.exceptions.ConnectionError as err:
+        logging.error("Request failed. DB server may be down.")
         sys.exit(1)
 
 
@@ -114,9 +119,9 @@ def format_payload(data):
     """
     # Parse str to dict 
     data = {
-        el.split(",")[0]: el.split(",")[1] 
+        el.split(SEPARATOR)[0]: el.split(SEPARATOR)[1] 
         for el in data.split("\n") 
-        if len(el) != 0 and el.split(",")[1] != "" 
+        if len(el) != 0 and el.split(SEPARATOR)[1] != "" 
     }
 
     # Extract epoch
