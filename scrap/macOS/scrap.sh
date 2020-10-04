@@ -12,7 +12,7 @@ printf "\n"
 
 #Current now in mA
 printf "current_now:"
-echo "$(system_profiler SPPowerDataType | grep Amperage | cut -f2 -d: | sed 's/ //g')"
+echo "$(system_profiler SPPowerDataType | grep Amperage | cut -f2 -d: | sed 's/ //g' | cut -d "-" -f2)"
 
 #Charge full design in mAh
 printf "charge_full_design:"
@@ -64,8 +64,6 @@ do
     sum_rpm=$((sum_rpm+rpm))
 done
 printf "mean_fans_rpm:"
-# mean_rpm=$((sum_rpm/$n_fans))
-# echo "$mean_rpm"
 echo "scale=2; $sum_rpm/$n_fans" | bc 
 
 #Battery temp (°C)
