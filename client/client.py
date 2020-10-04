@@ -16,6 +16,7 @@ from os.path import isfile, isdir, join
 
 import requests
 import subprocess
+import daemon 
 
 
 CACHE_DIR = join(str(Path.home()), ".battery_probe")
@@ -63,7 +64,6 @@ def client():
         logging.error("Bash script failed to scrap data")
         sys.exit(1) 
     logging.debug(payload)
-
     # Send payload
     try:
         response = requests.post(
@@ -73,12 +73,12 @@ def client():
         )
         if 400 <= response.status_code < 500:
             logging.error(f"InfluxDB could not understand the request. \
-                Reponse: {response.json()}"
+                Response: {response.json()}"
             )
             sys.exit(1)
         elif 500 <= response.status_code:
             logging.error(f"The system is overloaded or significantly impaired. \
-                Reponse: {response.json()}"
+                Response: {response.json()}"
             )
             sys.exit(1)
     except requests.exceptions.ConnectionError as err:
@@ -156,15 +156,14 @@ def main():
     global uuid, command
     uuid = get_uuid()
     if args.mac_os:
-        command = "scrap/macOS/scrap.sh"
+        command = "../scrap/MACOS/scrap.sh"
     elif args.linux:
-        command = "scrap/Linux/scrap.sh"
+        command = "../scrap/Linux/scrap.sh"
     else:
-        raise AssertionError("OS not specified") 
+        raise AssertionError("OS not specified")
     while True:
         client()
         sleep(int(args.interval))
-
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -172,4 +171,11 @@ if __name__ == "__main__":
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
-    main()
+    dir_path = os.path.dirname(os.path.realpath(__file__)) ## Get the directory path of the file
+    error_logs_file = open(dir_path+'/../logs/error_logs.txt','a')
+    context = daemon.DaemonContext(
+        working_directory = dir_path,
+        stderr = error_logs_file
+        )
+    with context:
+        main()
