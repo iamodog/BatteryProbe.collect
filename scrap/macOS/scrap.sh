@@ -20,18 +20,13 @@ echo $(istats battery capacity --value-only | sed '3q;d')
 
 #Charge full now in mAh
 printf "charge_full:"
-printf "$(system_profiler SPPowerDataType | grep "Full Charge Capacity" | cut -f2 -d: | sed 's/ //g' )"
-printf "\n"
+charge_full=$(system_profiler SPPowerDataType | grep "Full Charge Capacity" | cut -f2 -d: | sed 's/ //g')
+echo $charge_full
 
 #Charge now in mAh
 printf "charge_now:"
-printf "$(system_profiler SPPowerDataType | grep "Charge Remaining" | cut -f2 -d: | sed 's/ //g' )"
-printf "\n"
-
-#Capacity
-# printf "capacity:"
-# printf "$(istats battery | grep Current | cut -d "▇" -f2 | sed 's/ //g' | cut -d '%' -f1)"
-# printf "\n"
+charge_now=$(system_profiler SPPowerDataType | grep "Charge Remaining" | cut -f2 -d: | sed 's/ //g' )
+echo $charge_now
 
 #Supply manufacturer
 printf "@manufacturer:"
@@ -69,8 +64,9 @@ do
     sum_rpm=$((sum_rpm+rpm))
 done
 printf "mean_fans_rpm:"
-mean_rpm=$((sum_rpm/$n_fans))
-echo "$mean_rpm"
+# mean_rpm=$((sum_rpm/$n_fans))
+# echo "$mean_rpm"
+echo "scale=2; $sum_rpm/$n_fans" | bc 
 
 #Battery temp (°C)
 printf "battery_temp:"
