@@ -29,12 +29,12 @@ printf "$(system_profiler SPPowerDataType | grep "Charge Remaining" | cut -f2 -d
 printf "\n"
 
 #Capacity
-printf "capacity:"
-printf "$(istats battery | grep Current | cut -d "▇" -f2 | sed 's/ //g' | cut -d '%' -f1)"
-printf "\n"
+# printf "capacity:"
+# printf "$(istats battery | grep Current | cut -d "▇" -f2 | sed 's/ //g' | cut -d '%' -f1)"
+# printf "\n"
 
 #Supply manufacturer
-printf "manufacturer:"
+printf "@manufacturer:"
 printf "$(system_profiler SPPowerDataType | grep Manufacturer | cut -f2 -d: | sed 's/ //g' | head -n 1)"
 printf "\n"
 
@@ -83,7 +83,7 @@ echo $(istats battery cc --value-only | head -n 1)
 #Battery status : Charging, Full or Discharging
 Fully_charged=`system_profiler SPPowerDataType | grep Fully | cut -d ":" -f2 | sed 's/ //g'`
 Charging=`system_profiler SPPowerDataType | grep Charging | cut -d ":" -f2 | sed 's/ //g' | head -n 1`
-printf "Battery_status:"
+printf "@Battery_status:"
 if [ $Charging = "Yes" ]
 then 
     printf "Charging"
