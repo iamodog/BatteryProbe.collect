@@ -27,6 +27,7 @@ Data scrapping frequency (in seconds), default: 10
 Database uri, default: localhost:8086
 --database_uri
 
+(Required)
 Specify the OS
 --linux
 --mac_os
