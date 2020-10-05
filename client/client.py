@@ -135,7 +135,7 @@ def send_cached_payloads():
         payloads = queue_file.read().decode("utf-8")
         payloads = payloads.split("\0")
         
-        # Deleting queue file
+        # Delete queue file
         queue_file.close()
         logging.debug("Removing queue file from cache")
         os.remove(join(CACHE_DIR, QUEUE_FILE))
