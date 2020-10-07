@@ -77,7 +77,7 @@ echo $(istats battery cc --value-only | head -n 1)
 #Battery status : Charging, Full or Discharging
 Fully_charged=`system_profiler SPPowerDataType | grep Fully | cut -d ":" -f2 | sed 's/ //g'`
 Charging=`system_profiler SPPowerDataType | grep Charging | cut -d ":" -f2 | sed 's/ //g' | head -n 1`
-printf "@Battery_status:"
+printf "@battery_status:"
 if [ $Charging = "Yes" ]
 then 
     printf "Charging"
