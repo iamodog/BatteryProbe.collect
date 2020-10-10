@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+    		<key>Label</key>
+    		<string>batteryprobe.collect</string>
+    		<key>RunAtLoad</key>
+    		<true/>
+    		<key>WorkingDirectory</key>
+   		    <string>$WORKING_DIRECTORY</string>
+    		<key>ProgramArguments</key>
+    			<array>
+				<string>/usr/local/bin/python3</string>
+				<string>client/client.py</string>
+				<string>--mac_os</string>
+				<string>--database_uri=$DATABASE</string>
+			</array>   
+		<key>StandardErrorPath</key>
+   	 	<string>$WORKING_DIRECTORY/$OSX_DIR/$STD_ERR_LOG</string>
+    		<key>StandardOutPath</key>
+		<string>$WORKING_DIRECTORY/$OSX_DIR/$STD_OUT_LOG</string>
+   		<key>KeepAlive</key>
+    		<true/>
+	</dict>
+</plist>
