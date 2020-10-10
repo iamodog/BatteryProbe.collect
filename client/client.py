@@ -202,16 +202,25 @@ def format_payload(data):
         payload += f" value={value_m} {epoch}\n"  
     return payload
 
-
-def main():
-    global uuid, command
-    uuid = get_uuid()
+def select_os(args):
     if args.mac_os:
         command = "../scrap/MACOS/scrap.sh"
     elif args.linux:
         command = "../scrap/Linux/scrap.sh"
     else:
         raise AssertionError("OS not specified")
+    return command #inutile car command est global
+
+def select_logging_mode(args):
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+
+def main():
+    global uuid, command
+    uuid = get_uuid() #inutile car uuid est global
+    command = select_os(args) #inutile car uuid est global
     while True:
         send_cached_payloads()
         client()
@@ -220,16 +229,15 @@ def main():
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG)
+    select_logging_mode(args)
+    dir_path = os.path.dirname(os.path.realpath(__file__)) ## Get the directory path of the file
+    error_logs_file = open(dir_path+'/../logs/error_logs.txt','a')
+    debug_logs_file = open(dir_path+'/../logs/debug_logs.txt','a')
+    context = daemon.DaemonContext(
+        working_directory = dir_path,
+        stderr = error_logs_file,
+        stdout = debug_logs_file
+    )
+    with context:
+        print("Debug logs file init.")
         main()
-    else:
-        logging.basicConfig(level=logging.INFO)
-        dir_path = os.path.dirname(os.path.realpath(__file__)) ## Get the directory path of the file
-        error_logs_file = open(dir_path+'/../logs/error_logs.txt','a')
-        context = daemon.DaemonContext(
-            working_directory = dir_path,
-            stderr = error_logs_file
-        )
-        with context:
-            main()
