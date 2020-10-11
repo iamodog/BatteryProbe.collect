@@ -10,7 +10,7 @@
    		    <string>$WORKING_DIRECTORY</string>
     		<key>ProgramArguments</key>
     			<array>
-				<string>/usr/local/bin/python3</string>
+				<string>$PYTHON_ENV</string>
 				<string>$EXECUTABLE</string>
 				<string>--mac_os</string>
 				<string>--database_uri=$DATABASE</string>
