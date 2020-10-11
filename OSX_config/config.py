@@ -11,25 +11,53 @@ from os.path import join
 OSX_DIR = 'OSX_config'
 AGENT_FILE_EXAMPLE = 'batteryprobe.collect.example.plist'
 AGENT_FILE_TO_CREATE = 'batteryprobe.collect.launchAtLogin.plist'
-DIRECTORY = "test/"
-VAR_WORKING_DIRECTORY = '$WORKING_DIRECTORY'
+FINAL_LOCATION_AGENT_FILE = '~/Library/LaunchAgents'
+EXECUTABLE_FILE = 'client/client.py'
+STD_ERR_FILE = 'stderr.log'
+STD_OUT_FILE = 'stdout.log'
+DATABASE = '54.38.188.95:8086'
+
+
+# Vars to replace in the example.plist
+CONST_WORKING_DIRECTORY = '$WORKING_DIRECTORY'
+CONST_OSX_DIR = '$OSX_DIR'
+CONST_STD_ERR_LOG = '$STD_ERR_LOG'
+CONST_STD_OUT_LOG = '$STD_OUT_LOG'
+CONST_DATABASE = '$DATABASE'
+CONST_EXECUTABLE = '$EXECUTABLE'
 
 """
 Main function
 """
 def main():
+    #Init some variables
     dir_path = os.getcwd()
     LOCATION_EXAMPLE_FILE = join(OSX_DIR,AGENT_FILE_EXAMPLE)
     LOCATION_AGENT_FILE = join(OSX_DIR, AGENT_FILE_TO_CREATE)
 
+    #Copy the example.plist to launchAtLogin.plist
     os.system('cp '+LOCATION_EXAMPLE_FILE+' '+LOCATION_AGENT_FILE)
+
+    #Replace content of launchAtLogin.plist according to the actual configuration
     with open(LOCATION_AGENT_FILE, 'r') as file:
         content = file.read()
-        updated_file = content.replace(VAR_WORKING_DIRECTORY, dir_path)
+        updated_file = content\
+            .replace(CONST_WORKING_DIRECTORY, dir_path)\
+            .replace(CONST_OSX_DIR, OSX_DIR)\
+            .replace(CONST_STD_ERR_LOG, STD_ERR_FILE)\
+            .replace(CONST_STD_OUT_LOG, STD_OUT_FILE)\
+            .replace(CONST_DATABASE, DATABASE)\
+            .replace(CONST_EXECUTABLE, EXECUTABLE_FILE)
         file.close()
 
+    #Save the updated_file
     with open(LOCATION_AGENT_FILE, 'w') as file:
         file.write(updated_file)
+
+    #Copy the updated file to final location in MacOs
+    os.system('cp '+ LOCATION_AGENT_FILE+' '+FINAL_LOCATION_AGENT_FILE)
+
+    os.system('launchctl load '+FINAL_LOCATION_AGENT_FILE+'/'+AGENT_FILE_TO_CREATE)
 
 if __name__ == "__main__":
     main()
