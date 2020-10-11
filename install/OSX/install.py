@@ -8,7 +8,7 @@ Allow the daemon to launch at login without interaction needed.
 import os
 from os.path import join
 
-OSX_DIR = 'OSX_config'
+OSX_DIR = 'OSX'
 AGENT_FILE_EXAMPLE = 'batteryprobe.collect.example.plist'
 AGENT_FILE_TO_CREATE = 'batteryprobe.collect.launchAtLogin.plist'
 FINAL_LOCATION_AGENT_FILE = '~/Library/LaunchAgents'
