@@ -16,6 +16,7 @@ EXECUTABLE_FILE = 'client/client.py'
 STD_ERR_FILE = 'stderr.log'
 STD_OUT_FILE = 'stdout.log'
 DATABASE = '54.38.188.95:8086'
+PYTHON = 'probe_env/bin/python3'
 PYTHON_ENV = 'probe_env/bin/activate'
 
 
@@ -50,7 +51,7 @@ def agent_install():
             .replace(CONST_STD_OUT_LOG, STD_OUT_FILE)\
             .replace(CONST_DATABASE, DATABASE)\
             .replace(CONST_EXECUTABLE, EXECUTABLE_FILE)\
-            .replace(CONST_PYTHON_ENV,PYTHON_ENV)
+            .replace(CONST_PYTHON_ENV, PYTHON)
         file.close()
 
     #Save the updated_file
@@ -68,7 +69,6 @@ def env_install():
     os.system('virtualenv probe_env')
     os.system('source '+PYTHON_ENV)
     os.system('pip3 install -r ./'+OSX_DIR+'/requirements.txt')
-    os.system('ls')
 
 if __name__ == "__main__":
     env_install()
