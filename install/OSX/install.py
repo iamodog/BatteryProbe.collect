@@ -9,6 +9,7 @@ import os
 from os.path import join
 
 # Configuration constants
+INSTALL_DIR = 'install'
 OSX_DIR = 'OSX'
 AGENT_FILE_EXAMPLE = 'batteryprobe.collect.example.plist'
 AGENT_FILE_TO_CREATE = 'batteryprobe.collect.launchAtLogin.plist'
@@ -36,8 +37,8 @@ Agent installation
 def agent_install():
     #Init some variables
     dir_path = os.getcwd()
-    LOCATION_EXAMPLE_FILE = join(OSX_DIR,AGENT_FILE_EXAMPLE)
-    LOCATION_AGENT_FILE = join(OSX_DIR, AGENT_FILE_TO_CREATE)
+    LOCATION_EXAMPLE_FILE = join(INSTALL_DIR, OSX_DIR,AGENT_FILE_EXAMPLE)
+    LOCATION_AGENT_FILE = join(INSTALL_DIR, OSX_DIR, AGENT_FILE_TO_CREATE)
 
     #Copy the example.plist to launchAtLogin.plist
     os.system('cp '+LOCATION_EXAMPLE_FILE+' '+LOCATION_AGENT_FILE)
@@ -47,7 +48,7 @@ def agent_install():
         content = file.read()
         updated_file = content\
             .replace(CONST_WORKING_DIRECTORY, dir_path)\
-            .replace(CONST_OSX_DIR, OSX_DIR)\
+            .replace(CONST_OSX_DIR, join(INSTALL_DIR,OSX_DIR))\
             .replace(CONST_STD_ERR_LOG, STD_ERR_FILE)\
             .replace(CONST_STD_OUT_LOG, STD_OUT_FILE)\
             .replace(CONST_DATABASE, DATABASE)\
@@ -72,7 +73,7 @@ def env_install():
     os.system('pip3 install virtualenv')
     os.system('virtualenv probe_env')
     os.system('source '+PYTHON_ENV)
-    os.system('pip3 install -r ./'+OSX_DIR+'/requirements.txt')
+    os.system('pip3 install -r ./'+INSTALL_DIR+'/'+OSX_DIR+'/requirements.txt')
 
 if __name__ == "__main__":
     env_install()
