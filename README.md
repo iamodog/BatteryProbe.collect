@@ -39,6 +39,16 @@ Set debug mode
 #### Logs
 Client logs are located in "logs/error_logs.txt"
 
+### MACOS
+
+On MacOs, you need to install istats by yourself before trying to use batteryProbe.
+This can be done with that command: 
+``` 
+gem install iStats
+``` 
+A sudo can be needed.
+
+
 
 
 
