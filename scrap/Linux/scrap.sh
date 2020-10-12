@@ -44,9 +44,9 @@ echo cpu_temp:$(sensors | grep "Core 0:" | grep "\+[0-9][0-9]*\.[0-9]" -o | head
 echo n_running_threads:$(( `ps axms | wc -l` - 1 ))
 
 # Load average (m-1, m-5, m-15)
-echo load_average_1:$(uptime | grep -E "[0-9],[0-9]{2}" -o | sed '1q;d' | sed 's/,/\./' )
-echo load_average_5:$(uptime | grep -E "[0-9],[0-9]{2}" -o | sed '2q;d' | sed 's/,/\./' )
-echo load_average_15:$(uptime | grep -E "[0-9],[0-9]{2}" -o | sed '3q;d' | sed 's/,/\./' )
+echo load_average_1:$(uptime | grep -E "[0-9](,|\.)[0-9]{2}" -o | sed '1q;d' | sed 's/,/\./' )
+echo load_average_5:$(uptime | grep -E "[0-9](,|\.)[0-9]{2}" -o | sed '2q;d' | sed 's/,/\./' )
+echo load_average_15:$(uptime | grep -E "[0-9](,|\.)[0-9]{2}" -o | sed '3q;d' | sed 's/,/\./' )
 
 #- Fan speeds (rotation per minute)
 echo fans_rpm:$(sensors | grep "RPM" | head -n 1 | awk '{$1=$1};1' | cut -d" " -f2)
