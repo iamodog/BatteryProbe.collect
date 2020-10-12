@@ -8,6 +8,7 @@ Allow the daemon to launch at login without interaction needed.
 import os
 from os.path import join
 
+# Configuration constants
 OSX_DIR = 'OSX'
 AGENT_FILE_EXAMPLE = 'batteryprobe.collect.example.plist'
 AGENT_FILE_TO_CREATE = 'batteryprobe.collect.launchAtLogin.plist'
@@ -20,7 +21,7 @@ PYTHON = 'probe_env/bin/python3'
 PYTHON_ENV = 'probe_env/bin/activate'
 
 
-# Vars to replace in the example.plist
+# Variables to fill
 CONST_WORKING_DIRECTORY = '$WORKING_DIRECTORY'
 CONST_OSX_DIR = '$OSX_DIR'
 CONST_STD_ERR_LOG = '$STD_ERR_LOG'
@@ -30,7 +31,7 @@ CONST_EXECUTABLE = '$EXECUTABLE'
 CONST_PYTHON_ENV = '$PYTHON_ENV'
 
 """
-Main function
+Agent installation
 """
 def agent_install():
     #Init some variables
@@ -63,6 +64,9 @@ def agent_install():
 
     os.system('launchctl load '+FINAL_LOCATION_AGENT_FILE+'/'+AGENT_FILE_TO_CREATE)
 
+"""
+Environment installation
+"""
 def env_install():
     # Need istats
     os.system('pip3 install virtualenv')
