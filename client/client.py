@@ -1,3 +1,5 @@
+#!/opt/batteryprobe/probe_env/bin/python3
+
 """Main client script.
 
 Collect the data from a bash script, and send it to a remote database along 
@@ -171,6 +173,7 @@ if __name__ == "__main__":
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
+
     dir_path = os.path.dirname(os.path.realpath(__file__)) ## Get the directory path of the file
     error_logs_file = open(dir_path+'/../logs/error_logs.txt','a')
     context = daemon.DaemonContext(
