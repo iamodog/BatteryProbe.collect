@@ -13,8 +13,8 @@
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 DESC="Battery probe data scraping daemon"
 NAME=batteryprobe
-DAEMON=/opt/BatteryProbe/client
-DAEMON_ARGS=""
+DAEMON=/opt/batteryprobe/client/client.py
+DAEMON_ARGS="--database_uri 54.38.188.95:8086 --linux"
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
