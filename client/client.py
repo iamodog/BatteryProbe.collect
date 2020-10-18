@@ -24,6 +24,7 @@ import subprocess
 CACHE_DIR = join(str(Path.home()), ".battery_probe")
 UUID_FILE = "uuid"
 QUEUE_FILE = "queue"
+MAX_QUEUE_FILE_SIZE = 5000000
 SEPARATOR = ":"
 
 parser = argparse.ArgumentParser()
@@ -81,8 +82,16 @@ def client():
 
 def cache_payload(payload):
     """Add payload to cache."""
-    with open(join(CACHE_DIR, QUEUE_FILE), "ab") as queue_file:
-            queue_file.write((payload + "\0").encode())
+    queue_path = join(CACHE_DIR, QUEUE_FILE)
+    try:
+        file_size = os.path.getsize(queue_path)
+    except FileNotFoundError:
+        file_size = 0
+    if file_size < MAX_QUEUE_FILE_SIZE:
+        with open(queue_path, "ab") as queue_file:
+                queue_file.write((payload + "\0").encode())
+    else:
+        logging.info("Queue file size exceed the limit fixed to 5mb. Following data will not be save.")
 
 
 def db_is_reachable():
@@ -241,5 +250,4 @@ if __name__ == "__main__":
         stdout = debug_logs_file
     )
     with context:
-        print("Debug logs file init.")
         main()
