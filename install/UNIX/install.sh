@@ -1,23 +1,37 @@
+set -e
+
+INIT_D_DIR=/etc/init.d
+INSTALL_DIR=/opt/batteryprobe
+
 # Install sensors
-#sudo apt-get install lm-sensors
-#sudo sensors-detect --auto
+echo "Install sensors"
+sudo apt-get install lm-sensors
+sudo sensors-detect --auto
 
 # Put files in /opt/batteryprobe
-sudo mkdir -p /opt/batteryprobe/logs /opt/batteryprobe/client
-sudo cp -r scrap /opt/batteryprobe
-sudo chmod 327 /opt/batteryprobe
+echo "Move client and scraping script to " $INSTALL_DIR 
+sudo mkdir -p $INSTALL_DIR/logs $INSTALL_DIR/client
+sudo cp -r scrap $INSTALL_DIR
+sudo chmod 327 $INSTALL_DIR
 
 # Install python env
-cd /opt/batteryprobe
+echo "Install python env"
+cd $INSTALL_DIR
 pip install virtualenv
 virtualenv probe_env
 cd -
-source /opt/batteryprobe/probe_env/bin/activate && pip3 install -r client/requirements.txt
+source $INSTALL_DIR/probe_env/bin/activate && pip3 install -r client/requirements.txt
 
 # Add batteryprobe service to init.d
-sudo cp install/UNIX/batteryprobe /etc/init.d/batteryprobe
-sudo chmod +x /etc/init.d/batteryprobe
+echo "Add service to " $INIT_D_DIR
+sudo cp install/UNIX/batteryprobe $INIT_D_DIR/batteryprobe
+sudo chmod +x $INIT_D_DIR/batteryprobe
 
-# Add client to opt dir
-sudo cp client/client.py /opt/batteryprobe/client/client.py
-sudo chmod +x /opt/batteryprobe/client/client.py
+# Add client to install dir
+echo "Add client to " $INSTALL_DIR
+sudo cp client/client.py  $INSTALL_DIR/client/client.py
+sudo chmod +x $INSTALL_DIR/client/client.py
+
+# Reload daemons
+systemctl daemon-reload
+sudo update-rc.d batteryprobe defaults
