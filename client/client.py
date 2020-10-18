@@ -1,3 +1,5 @@
+#!/opt/batteryprobe/probe_env/bin/python3
+
 """Main client script.
 
 Collect the data from a bash script, and send it to a remote database along 
@@ -206,7 +208,7 @@ def select_os(args):
     if args.mac_os:
         command = "../scrap/MACOS/scrap.sh"
     elif args.linux:
-        command = "../scrap/Linux/scrap.sh"
+        command = "../scrap/UNIX/scrap.sh"
     else:
         raise AssertionError("OS not specified")
     return command #inutile car command est global
