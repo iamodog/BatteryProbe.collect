@@ -16,13 +16,14 @@ from time import sleep
 from pathlib import Path
 from os.path import isfile, isdir, join
 
+import daemon 
 import requests
 import subprocess
-import daemon 
 
 
 CACHE_DIR = join(str(Path.home()), ".battery_probe")
-CACHE_FILE = "uuid"
+UUID_FILE = "uuid"
+QUEUE_FILE = "queue"
 SEPARATOR = ":"
 
 parser = argparse.ArgumentParser()
@@ -66,42 +67,92 @@ def client():
         logging.error("Bash script failed to scrap data")
         sys.exit(1) 
     logging.debug(payload)
+    
     # Send payload
     try:
-        response = requests.post(
-            f"http://{args.database_uri}/write?db=monitoring&precision=s",
-            headers={"Content-type": "text/xml"}, 
-            data=payload,
-        )
-        if 400 <= response.status_code < 500:
-            logging.error(f"InfluxDB could not understand the request. \
-                Response: {response.json()}"
-            )
-            sys.exit(1)
-        elif 500 <= response.status_code:
-            logging.error(f"The system is overloaded or significantly impaired. \
-                Response: {response.json()}"
-            )
-            sys.exit(1)
+        send_payload(payload)        
     except requests.exceptions.ConnectionError as err:
         logging.error("Request failed. DB server may be down.")
-        sys.exit(1)
+        logging.info("Adding payload to queue")
+        # If server can't be reached, the payload is kept in cache
+        # to be sent later.
+        cache_payload(payload)
+               
 
+def cache_payload(payload):
+    """Add payload to cache."""
+    with open(join(CACHE_DIR, QUEUE_FILE), "ab") as queue_file:
+            queue_file.write((payload + "\0").encode())
+
+
+def db_is_reachable():
+    """Check if database is reachable."""
+    try:
+        response = requests.get(f"http://{args.database_uri}/ping")
+        logging.debug("DB is reachable")
+        return response.status_code == 204
+    except requests.exceptions.ConnectionError as err:
+        return False
+
+
+def send_payload(payload):
+    response = requests.post(
+        f"http://{args.database_uri}/write?db=monitoring&precision=s",
+        headers={"Content-type": "text/xml"}, 
+        data=payload,
+    )
+    if 400 <= response.status_code < 500:
+        logging.error(f"InfluxDB could not understand the request. \
+            Response: {response.json()}"
+        )
+    elif 500 <= response.status_code:
+        logging.error(f"The system is overloaded or significantly impaired. \
+            Response: {response.json()}"
+        )
+ 
 
 def get_uuid():
     """Return an universally unique ID to identify the host machine"""
     # If uuid already exists
-    if isfile(join(CACHE_DIR, CACHE_FILE)):
-        with open(join(CACHE_DIR, CACHE_FILE), "r") as file:
+    if isfile(join(CACHE_DIR, UUID_FILE)):
+        with open(join(CACHE_DIR, UUID_FILE), "r") as file:
             return file.read()
     # If not, create one
     else:
         if not isdir(CACHE_DIR):
             os.mkdir(CACHE_DIR)
-        with open(join(CACHE_DIR, CACHE_FILE), "a") as file:
+        with open(join(CACHE_DIR, UUID_FILE), "a") as file:
             uuid = str(uuid4()).replace("-", "")
             file.write(uuid)
             return uuid
+
+
+def send_cached_payloads():
+    # If queue is not empty and DB is reachable
+    if isfile(join(CACHE_DIR, QUEUE_FILE)) and db_is_reachable():
+        logging.info("Sending cached payloads to remote DB")
+        queue_file = open(join(CACHE_DIR, QUEUE_FILE), "rb")
+        
+        # Put payloads in a python list
+        payloads = queue_file.read().decode("utf-8")
+        payloads = payloads.split("\0")
+        
+        # Delete queue file
+        queue_file.close()
+        logging.debug("Removing queue file from cache")
+        os.remove(join(CACHE_DIR, QUEUE_FILE))
+
+        while len(payloads) != 0:
+            # FIFO access
+            payload = payloads.pop(0)
+            try:
+                send_payload(payload)
+            except requests.exceptions.ConnectionError as err:
+                # If an error occurs at this stage we put the remaining
+                # payloads back in cache
+                cache_payload(payload)
+                for payload in payloads:
+                    cache_payload(payload)
 
 
 def format_payload(data):
@@ -153,32 +204,42 @@ def format_payload(data):
         payload += f" value={value_m} {epoch}\n"  
     return payload
 
-
-def main():
-    global uuid, command
-    uuid = get_uuid()
+def select_os(args):
     if args.mac_os:
         command = "../scrap/MACOS/scrap.sh"
     elif args.linux:
         command = "../scrap/UNIX/scrap.sh"
     else:
         raise AssertionError("OS not specified")
-    while True:
-        client()
-        sleep(int(args.interval))
+    return command #inutile car command est global
 
-if __name__ == "__main__":
-    args = parser.parse_args()
+def select_logging_mode(args):
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
 
+def main():
+    global uuid, command
+    uuid = get_uuid() #inutile car uuid est global
+    command = select_os(args) #inutile car uuid est global
+    while True:
+        send_cached_payloads()
+        client()
+        sleep(int(args.interval))
+
+
+if __name__ == "__main__":
+    args = parser.parse_args()
+    select_logging_mode(args)
     dir_path = os.path.dirname(os.path.realpath(__file__)) ## Get the directory path of the file
     error_logs_file = open(dir_path+'/../logs/error_logs.txt','a')
+    debug_logs_file = open(dir_path+'/../logs/debug_logs.txt','a')
     context = daemon.DaemonContext(
         working_directory = dir_path,
-        stderr = error_logs_file
-        )
+        stderr = error_logs_file,
+        stdout = debug_logs_file
+    )
     with context:
+        print("Debug logs file init.")
         main()
