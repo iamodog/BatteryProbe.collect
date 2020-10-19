@@ -27,7 +27,7 @@ UUID_FILE = "uuid"
 QUEUE_FILE = "queue"
 MAX_QUEUE_FILE_SIZE = 5000000
 SEPARATOR = ":"
-PID_FILE="/usr/var/battery_probe.pid"
+PID_FILE="/var/run/battery_probe.pid"
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -250,7 +250,7 @@ if __name__ == "__main__":
         working_directory = dir_path,
         stderr = error_logs_file,
         stdout = debug_logs_file,
-        pidfile=pidfile.TimeoutPIDLockFile("/var/run/battery_probe.pid")
+        pidfile=pidfile.TimeoutPIDLockFile(PID_FILE)
     )
     with context:
         main()
