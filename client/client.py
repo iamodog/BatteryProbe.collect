@@ -19,6 +19,7 @@ from os.path import isfile, isdir, join
 import daemon 
 import requests
 import subprocess
+from daemon import pidfile
 
 
 CACHE_DIR = join(str(Path.home()), ".battery_probe")
@@ -26,6 +27,7 @@ UUID_FILE = "uuid"
 QUEUE_FILE = "queue"
 MAX_QUEUE_FILE_SIZE = 5000000
 SEPARATOR = ":"
+PID_FILE="/usr/var/battery_probe.pid"
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -247,7 +249,8 @@ if __name__ == "__main__":
     context = daemon.DaemonContext(
         working_directory = dir_path,
         stderr = error_logs_file,
-        stdout = debug_logs_file
+        stdout = debug_logs_file,
+        pidfile=pidfile.TimeoutPIDLockFile("/var/run/battery_probe.pid")
     )
     with context:
         main()
