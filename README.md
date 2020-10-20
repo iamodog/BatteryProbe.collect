@@ -10,13 +10,27 @@ $ docker-compose -f server/docker-compose.yml up --build -d
 
 ## Client
 
-### Daemon
-
-To start the daemon, simply launch the program "client.py"
-
-Example:
+### MACOS
+To initiate and load the daemon, simply launch the program "install.py"
 ``` 
-$ python3 client/client.py --mac_os 
+$ python3 install/OSX/install.py
+``` 
+On MacOs, you need to install istats by yourself before trying to use batteryProbe.
+This can be done with that command: 
+``` 
+gem install iStats
+``` 
+A sudo can be needed.
+
+### Linux
+To complete
+
+### Go forther
+
+If you want to go further, you can launch the client without launching the daemon
+
+``` 
+python3 client/client.py
 ``` 
 
 Different options are available: 
@@ -37,16 +51,10 @@ Set debug mode
 ``` 
 
 #### Logs
-Client logs are located in "logs/error_logs.txt"
+Client logs are located in "logs/" for the client program
+Daemon logs are located in "install/(OSX/UNIX)/" for the daemon logs.
 
-### MACOS
 
-On MacOs, you need to install istats by yourself before trying to use batteryProbe.
-This can be done with that command: 
-``` 
-gem install iStats
-``` 
-A sudo can be needed.
 
 
 
