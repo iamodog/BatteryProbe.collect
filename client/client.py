@@ -246,7 +246,14 @@ if __name__ == "__main__":
     dir_path = os.path.dirname(os.path.realpath(__file__)) ## Get the directory path of the file
     error_logs_file = open(dir_path+'/../logs/error_logs.txt','a')
     debug_logs_file = open(dir_path+'/../logs/debug_logs.txt','a')
-    context = daemon.DaemonContext(
+    if args.mac_os: 
+        context = daemon.DaemonContext(
+        working_directory = dir_path,
+        stderr = error_logs_file,
+        stdout = debug_logs_file,
+    )
+    else: 
+        context = daemon.DaemonContext(
         working_directory = dir_path,
         stderr = error_logs_file,
         stdout = debug_logs_file,
