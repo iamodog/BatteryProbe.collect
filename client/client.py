@@ -74,7 +74,7 @@ def client():
     # Send payload
     try:
         send_payload(payload)        
-    except requests.exceptions.ConnectionError as err:
+    except requests.exceptions as err:
         logging.error("Request failed. DB server may be down.")
         logging.info("Adding payload to queue")
         # If server can't be reached, the payload is kept in cache
