@@ -6,6 +6,11 @@
     		<string>batteryprobe.collect</string>
     		<key>RunAtLoad</key>
     		<true/>
+			<key>EnvironmentVariables</key>
+    		<dict>
+      		<key>PATH</key>
+      		<string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:</string>
+   			</dict>
     		<key>WorkingDirectory</key>
    		    <string>$WORKING_DIRECTORY</string>
     		<key>ProgramArguments</key>

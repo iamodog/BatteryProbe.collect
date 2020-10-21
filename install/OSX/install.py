@@ -74,6 +74,7 @@ def env_install():
     os.system('virtualenv probe_env')
     os.system('source '+PYTHON_ENV)
     os.system('pip3 install -r ./'+INSTALL_DIR+'/'+OSX_DIR+'/requirements.txt')
+    os.system('mkdir logs')
 
 if __name__ == "__main__":
     env_install()
