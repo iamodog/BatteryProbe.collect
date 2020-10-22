@@ -43,6 +43,12 @@ If the install is successful, start the daemon:
 $ systemctl start batteryprobe.service
 ```
 
+To stop the daemon, use 
+```
+$ systemctl stop batteryprobe.service
+$ sudo kill $(cat /run/battery_probe.pid)
+```
+
 ### Go further
 
 If you want to go further, you can launch the client without launching the daemon
