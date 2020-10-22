@@ -17,7 +17,7 @@ sudo chmod 327 $INSTALL_DIR
 # Install python env
 echo "Install python env"
 cd $INSTALL_DIR
-pip install virtualenv
+pip3 install virtualenv
 virtualenv probe_env
 cd -
 source $INSTALL_DIR/probe_env/bin/activate && pip3 install -r client/requirements.txt
