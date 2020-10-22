@@ -15,22 +15,40 @@ To initiate and load the daemon, simply launch the program "install.py"
 ``` 
 $ python3 install/OSX/install.py
 ``` 
-On MacOs, you need to install istats by yourself before trying to use batteryProbe.
+On MacOs, you need to install istats by yourself before trying to use BatteryProbe.
 This can be done with that command: 
 ``` 
-gem install iStats
+$ gem install iStats
 ``` 
-A sudo can be needed.
+Sudo rights can be needed.
+
+#### Logs
+Client logs are located in "logs/" for the client program
+Daemon logs are located in "install/OSX/" for the daemon logs.
 
 ### Linux
-To complete
+On Linux, launch the bash script `install/UNIX/install.sh`
 
-### Go forther
+```
+$ bash install/UNIX/install.sh
+```
+
+Sudo rights could be needed.
+
+The script will create a directory in `/opt/batteryprobe` and add the file 
+`install/UNIX/batteryprobe` to your `/etc/init.d`
+
+If the install is successful, start the daemon:
+```
+$ systemctl start batteryprobe.service
+```
+
+### Go further
 
 If you want to go further, you can launch the client without launching the daemon
 
 ``` 
-python3 client/client.py
+$ python3 client/client.py
 ``` 
 
 Different options are available: 
@@ -50,9 +68,6 @@ Set debug mode
 --debug
 ``` 
 
-#### Logs
-Client logs are located in "logs/" for the client program
-Daemon logs are located in "install/(OSX/UNIX)/" for the daemon logs.
 
 
 
