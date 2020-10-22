@@ -23,8 +23,8 @@ $ gem install iStats
 Sudo rights can be needed.
 
 #### Logs
-Client logs are located in "logs/" for the client program
-Daemon logs are located in "install/OSX/" for the daemon logs.
+Client logs are located in `logs/` for the client program
+Daemon logs are located in `install/OSX/` for the daemon logs.
 
 ### Linux
 On Linux, launch the bash script `install/UNIX/install.sh`
