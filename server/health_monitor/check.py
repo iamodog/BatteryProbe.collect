@@ -21,8 +21,11 @@ parser.add_argument("--params", default="")
 
 def is_healthy():
     """Check if remote db is healthy."""
-    response = requests.get(f"http://{params['db_uri']}/health")
-    return response.json()["status"] == "pass"
+    try:
+        response = requests.get(f"http://{params['db_uri']}/health")
+        return response.json()["status"] == "pass"
+    except requests.exceptions as err:
+        return False
 
 
 def unhealthy_state():
