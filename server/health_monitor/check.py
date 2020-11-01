@@ -58,7 +58,7 @@ def discord_alert(is_healthy):
         data = {"content": f"@everyone SERVICE IS DOWN ! @{now}"}
 
     requests.post(
-        params["db_uri"],
+        params["discord_webhook"],
         data=json.dumps(data),
         headers={"Content-Type": "application/json"}
     )
