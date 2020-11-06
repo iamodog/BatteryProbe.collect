@@ -24,7 +24,7 @@ def is_healthy():
     try:
         response = requests.get(f"http://{params['db_uri']}/health")
         return response.json()["status"] == "pass"
-    except requests.exceptions as err:
+    except Exception as err:
         return False
 
 
