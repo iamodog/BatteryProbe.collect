@@ -74,7 +74,7 @@ def client():
     # Send payload
     try:
         send_payload(payload)        
-    except requests.exceptions as err:
+    except Exception as err:
         logging.error("Request failed. DB server may be down.")
         logging.info("Adding payload to queue")
         # If server can't be reached, the payload is kept in cache
@@ -246,18 +246,19 @@ if __name__ == "__main__":
     dir_path = os.path.dirname(os.path.realpath(__file__)) ## Get the directory path of the file
     error_logs_file = open(dir_path+'/../logs/error_logs.txt','a')
     debug_logs_file = open(dir_path+'/../logs/debug_logs.txt','a')
+    
     if args.mac_os: 
         context = daemon.DaemonContext(
         working_directory = dir_path,
         stderr = error_logs_file,
         stdout = debug_logs_file,
     )
-    else: 
+    else:
         context = daemon.DaemonContext(
-        working_directory = dir_path,
-        stderr = error_logs_file,
-        stdout = debug_logs_file,
-        pidfile=pidfile.TimeoutPIDLockFile(PID_FILE)
-    )
+            working_directory = dir_path,
+            stderr = error_logs_file,
+            stdout = debug_logs_file,
+            pidfile=pidfile.TimeoutPIDLockFile(PIDFILE)
+        )
     with context:
         main()
