@@ -258,7 +258,7 @@ if __name__ == "__main__":
             working_directory = dir_path,
             stderr = error_logs_file,
             stdout = debug_logs_file,
-            pidfile=pidfile.TimeoutPIDLockFile(PIDFILE)
+            pidfile=pidfile.TimeoutPIDLockFile(PID_FILE)
         )
     with context:
         main()
