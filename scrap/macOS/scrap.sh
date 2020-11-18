@@ -27,7 +27,7 @@ echo $charge_full
 printf "charge_now:"
 # MAC OS Catalina version
 #charge_now=$(system_profiler SPPowerDataType | grep "Charge Remaining" | cut -f2 -d: | sed 's/ //g' )
-# MAC OS Big Sur version
+# MAC OS Big Sur version 
 charge_now=$(istats battery capacity --value-only | sed '1q;d')
 echo $charge_now
 
